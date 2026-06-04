@@ -20,14 +20,13 @@ public class OrderController {
     @PostMapping("/create-order")
     public ResponseEntity<?> createOrderController(@RequestBody Order order) {
         try {
-           String response =  orderService.createOrderService(order);
+           OrderResponse response =  orderService.createOrderService(order);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Order not Successfully:" + e.getMessage());
         }
-
     }
 
     @GetMapping("/{orderId}")

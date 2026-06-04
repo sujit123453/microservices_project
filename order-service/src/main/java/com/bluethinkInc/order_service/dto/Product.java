@@ -2,6 +2,9 @@ package com.bluethinkInc.order_service.dto;
 
 
 
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 
 
@@ -9,11 +12,11 @@ public class Product {
     private Long productId;
     private String productName;
     private String productDescription;
-    private String price;
+    private double price;
     private LocalDateTime mfd;
 
     public Product(){}
-    public Product(Long productId, String productName, String price, String productDescription, LocalDateTime mfd) {
+    public Product(Long productId, String productName, double price, String productDescription, LocalDateTime mfd) {
         this.productId = productId;
         this.productName = productName;
         this.price = price;
@@ -33,7 +36,7 @@ public class Product {
         return productDescription;
     }
 
-    public String getPrice() {
+    public double getPrice() {
         return price;
     }
 

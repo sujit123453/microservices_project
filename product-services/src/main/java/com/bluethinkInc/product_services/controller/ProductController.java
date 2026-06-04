@@ -46,7 +46,7 @@ public class ProductController {
                     .body(product);
         }catch(RuntimeException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Product not found with this id"+ e.getMessage());
+                    .body("Product not found with this id: "+ e.getMessage());
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Something went wrong" + e.getMessage());
@@ -60,7 +60,7 @@ public class ProductController {
             return ResponseEntity.ok("Product updated successfully");
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Product not found with this id" + e.getMessage());
+                    .body("Product not found with this id: " + e.getMessage());
         }
     }
 

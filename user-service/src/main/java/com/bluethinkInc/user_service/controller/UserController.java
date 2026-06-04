@@ -25,7 +25,7 @@ public class UserController {
                     .body("User not added:"+ e.getMessage());
         }
     }
-    @GetMapping("/{id}")
+    @GetMapping("/internal/{id}")
     public ResponseEntity<?> getUserByIdController(@PathVariable Long id){
         try{
             System.out.println("getUserByIdController try block");
