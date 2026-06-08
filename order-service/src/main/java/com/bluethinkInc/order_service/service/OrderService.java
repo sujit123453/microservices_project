@@ -4,47 +4,33 @@ import com.bluethinkInc.order_service.client.PaymentClient;
 import com.bluethinkInc.order_service.dto.*;
 import com.bluethinkInc.order_service.model.Order;
 import com.bluethinkInc.order_service.repository.OrderRepo;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 public class OrderService {
     private final OrderRepo orderRepo;
-    private final RestTemplate restTemplate;
     private final PaymentClient paymentClient; //feign client
     private final OrderProducer orderProducer;
+    private final CircuitBreakerService circuitBreakerService;
 
-    public OrderService(OrderRepo orderRepo, RestTemplate restTemplate,
+    public OrderService(OrderRepo orderRepo, CircuitBreakerService circuitBreakerService,
                         PaymentClient paymentClient, OrderProducer orderProducer) {
         this.orderRepo = orderRepo;
-        this.restTemplate = restTemplate;
         this.paymentClient = paymentClient;
+        this.circuitBreakerService = circuitBreakerService;
         this.orderProducer = orderProducer;
     }
-
-    @Value("${user-service.base-url}")
-    private String userServiceUrl;
-
-    @Value("${product-service.base-url}")
-    private String productServiceUrl;
-
 
     public OrderResponse createOrderService(Order order) {
         order.setOderDate(LocalDateTime.now());
 
         Order savedOrder = orderRepo.save(order);
-        Product product = restTemplate.getForObject(
-                productServiceUrl + "/product/" + savedOrder.getProductId(),
-                Product.class
-        );
-        User user = restTemplate.getForObject(
-                userServiceUrl + "/user/internal/" + savedOrder.getUserId(),
-                User.class
-        );
+        Product product = circuitBreakerService.getProduct(order.getProductId());
+        User user = circuitBreakerService.getUser(order.getUserId());
         if(product == null){
             throw new RuntimeException("Product not found with id " + order.getProductId());
         }
@@ -77,18 +63,12 @@ public class OrderService {
         );
     }
 
+
     public OrderResponse getOrderDetails(Long orderId) {
         Order order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
-        User user = restTemplate.getForObject(
-                userServiceUrl + "/user/internal/" + order.getUserId(),
-                User.class
-        );
-        Product product = restTemplate.getForObject(
-                productServiceUrl + "/product/" + order.getProductId(),
-                Product.class
-        );
-
+        User user = circuitBreakerService.getUser(order.getUserId());
+        Product product = circuitBreakerService.getProduct(order.getProductId());
         return new OrderResponse(
                 order.getOrderId(),
                 user,

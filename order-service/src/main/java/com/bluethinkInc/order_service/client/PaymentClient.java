@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name="PAYMENT-SERVICES")
 public interface PaymentClient {
     @PostMapping("/payment/pay")
-    public ResponseEntity<String> makePayment(
+     ResponseEntity<String> makePayment(
             @RequestBody PaymentRequest paymentRequest
             );
 }

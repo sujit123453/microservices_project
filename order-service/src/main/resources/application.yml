@@ -18,6 +18,36 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
 
+resilience4j:
+  circuitbreaker:
+    instances:
+
+      userBreaker:
+        registerHealthIndicator: true
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        slidingWindowSize: 10
+        waitDurationInOpenState: 30s
+        permittedNumberOfCallsInHalfOpenState: 3
+
+      productBreaker:
+        registerHealthIndicator: true
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        slidingWindowSize: 10
+        waitDurationInOpenState: 30s
+        permittedNumberOfCallsInHalfOpenState: 3
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,circuitbreakers
+
+  endpoint:
+    health:
+      show-details: always
+
 eureka:
   client:
     service-url:
@@ -25,5 +55,6 @@ eureka:
 
 user-service:
   base-url: http://USER-SERVICE
+
 product-service:
   base-url: http://PRODUCT-SERVICES

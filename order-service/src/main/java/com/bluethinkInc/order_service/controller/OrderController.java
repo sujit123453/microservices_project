@@ -3,10 +3,13 @@ package com.bluethinkInc.order_service.controller;
 import com.bluethinkInc.order_service.dto.OrderResponse;
 import com.bluethinkInc.order_service.model.Order;
 import com.bluethinkInc.order_service.service.OrderService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
