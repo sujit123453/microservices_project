@@ -3,6 +3,7 @@ package com.bluethinkInc.order_service.service;
 import com.bluethinkInc.order_service.dto.Product;
 import com.bluethinkInc.order_service.dto.User;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class CircuitBreakerService {
     @Value("${product-service.base-url}")
     private String productServiceUrl;
 
+    @Retry(name = "userRetry")
     @CircuitBreaker(name = "userBreaker", fallbackMethod = "getUserFallback")
     public User getUser(Long userId){
       return  restTemplate.getForObject(
@@ -31,13 +33,14 @@ public class CircuitBreakerService {
     }
 
     public User getUserFallback(Long userId, Exception ex){
-        log.error("getUserFallback Called: " + ex.getMessage());
+        log.error("getUserFallback Called: {}", ex.getMessage());
         User user = new User();
         user.setId(userId);
         user.setName("Unknown user");
         return user;
     }
 
+    @Retry(name = "productRetry")
     @CircuitBreaker(name = "productBreaker", fallbackMethod = "getProductFallback")
     public Product getProduct(Long productId){
         return restTemplate.getForObject(
@@ -46,7 +49,7 @@ public class CircuitBreakerService {
         );
     }
     public Product getProductFallback(Long productId, Exception ex){
-        log.error("getProductFallback Called: " + ex.getMessage());
+        log.error("getProductFallback Called: {}",  ex.getMessage());
 
         Product product = new Product();
         product.setProductId(productId);

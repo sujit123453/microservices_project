@@ -3,7 +3,6 @@ package com.bluethinkInc.order_service.controller;
 import com.bluethinkInc.order_service.dto.OrderResponse;
 import com.bluethinkInc.order_service.model.Order;
 import com.bluethinkInc.order_service.service.OrderService;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +33,6 @@ public class OrderController {
 
     @GetMapping("/{orderId}")
     public OrderResponse getOrder(@PathVariable Long orderId) {
-
         return orderService.getOrderDetails(orderId);
     }
 }
